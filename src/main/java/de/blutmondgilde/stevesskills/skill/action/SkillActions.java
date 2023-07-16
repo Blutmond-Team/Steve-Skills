@@ -26,6 +26,6 @@ public class SkillActions {
             .register();
 
     public static void init() {
-        StevesSkills.getLogger().info("Registered default Skill Actions.");
+        StevesSkills.getLogger().info("Registered default skill actions.");
     }
 }
