@@ -2,6 +2,8 @@ package de.blutmondgilde.stevesskills.skill.action;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -12,6 +14,7 @@ import java.util.function.Consumer;
 
 
 public class SkillAction {
+    public static final Codec<SkillAction> CODEC = ExtraCodecs.lazyInitializedCodec(() -> SkillActions.REGISTRY_SUPPLIER.get().getCodec());
     private final List<Pair<Class<?>, Consumer<? extends Event>>> eventListener;
 
     public SkillAction(List<Pair<Class<?>, Consumer<? extends Event>>> eventListener) {
@@ -27,16 +30,18 @@ public class SkillAction {
     }
 
     public void registerEventListener() {
-        eventListener.forEach(events -> {
-            if (events.getFirst() != null) {
+        eventListener.forEach(event -> {
+            // Register Generic Events
+            if (event.getFirst() != null) {
                 try {
                     Method addGenericListenerMethod = MinecraftForge.EVENT_BUS.getClass().getDeclaredMethod("addGenericListener", Class.class, Consumer.class);
-                    addGenericListenerMethod.invoke(MinecraftForge.EVENT_BUS, events.getFirst(), events.getSecond());
+                    addGenericListenerMethod.invoke(MinecraftForge.EVENT_BUS, event.getFirst(), event.getSecond());
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                MinecraftForge.EVENT_BUS.addListener(events.getSecond());
+                // Register Events
+                MinecraftForge.EVENT_BUS.addListener(event.getSecond());
             }
         });
         // Prevent duplicate event listener
