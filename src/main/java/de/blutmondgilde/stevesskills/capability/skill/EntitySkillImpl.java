@@ -1,18 +1,23 @@
 package de.blutmondgilde.stevesskills.capability.skill;
 
-import de.blutmondgilde.stevesskills.skill.action.SkillActionInstance;
+import com.mojang.datafixers.util.Pair;
+import de.blutmondgilde.stevesskills.event.SkillEvent.UnlockedEvent;
+import de.blutmondgilde.stevesskills.network.StevesSkillsNetwork;
+import de.blutmondgilde.stevesskills.network.packet.clientbound.SyncEntitySkillsPacket;
+import de.blutmondgilde.stevesskills.skill.Skill;
+import de.blutmondgilde.stevesskills.skill.SkillInstance;
+import de.blutmondgilde.stevesskills.util.map.DoubeValuedHashMap;
+import de.blutmondgilde.stevesskills.util.map.DoubleValuedMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.network.PacketDistributor;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@EventBusSubscriber
 public class EntitySkillImpl implements EntitySkills {
     private static final String SKILL_LIST_TAG_ID = "skills";
     private static final String SKILL_INSTANCE_ID = "skillInstance";
@@ -21,7 +26,7 @@ public class EntitySkillImpl implements EntitySkills {
     /**
      * Map containing the skill action instances and their status (enabled / disabled)
      */
-    private final Map<SkillActionInstance, Boolean> skills = new HashMap<>();
+    private final DoubleValuedMap<Skill, SkillInstance, Boolean> skills = new DoubeValuedHashMap<>();
     @Getter
     @Setter
     private Entity owner = null;
@@ -31,10 +36,10 @@ public class EntitySkillImpl implements EntitySkills {
         CompoundTag tag = new CompoundTag();
 
         ListTag skillTag = new ListTag();
-        skills.forEach((instance, aBoolean) -> {
+        skills.forEach((key, instance, status) -> {
             CompoundTag skillData = new CompoundTag();
             skillData.put(SKILL_INSTANCE_ID, instance.serialize());
-            skillData.putBoolean(SKILL_INSTANCE_STATUS_ID, aBoolean);
+            skillData.putBoolean(SKILL_INSTANCE_STATUS_ID, status);
 
             skillTag.add(skillData);
         });
@@ -51,20 +56,38 @@ public class EntitySkillImpl implements EntitySkills {
         skillTags.forEach(data -> {
             CompoundTag tag = (CompoundTag) data;
             boolean status = tag.getBoolean(SKILL_INSTANCE_STATUS_ID);
-            SkillActionInstance instance = SkillActionInstance.of(tag.getCompound(SKILL_INSTANCE_ID));
-            skills.put(instance, status);
+            SkillInstance instance = SkillInstance.of(tag.getCompound(SKILL_INSTANCE_ID));
+            skills.put(instance.getSkillAction(), instance, status);
         });
     }
 
-    public Map<SkillActionInstance, Boolean> getSkillsStatusMap() {
+    @Override
+    public DoubleValuedMap<Skill, SkillInstance, Boolean> getSkillsStatusMap() {
         return skills;
     }
 
-    public void addSkillInstance(SkillActionInstance instance, boolean status) {
-        skills.put(instance, status);
+    @Override
+    public void addSkill(SkillInstance instance, boolean status) {
+        skills.put(instance.getSkillAction(), instance, status);
     }
 
-    public boolean removeSkillInstance(SkillActionInstance instance) {
-        return skills.remove(instance);
+    @Override
+    public Pair<SkillInstance, Boolean> removeSkill(Skill skill) {
+        return skills.remove(skill);
+    }
+
+    @Override
+    public void unlock(SkillInstance skillInstance) {
+        if (MinecraftForge.EVENT_BUS.post(new UnlockedEvent(skillInstance, getOwner()))) {
+            addSkill(skillInstance);
+            getOwner().sendSystemMessage(Component.literal(String.format("You unlocked the skill %s!", "tbh")));
+        }
+    }
+
+    @Override
+    public void sync() {
+        if (!getOwner().level().isClientSide()) {
+            StevesSkillsNetwork.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(this::getOwner), new SyncEntitySkillsPacket(getOwner().getId(), this));
+        }
     }
 }

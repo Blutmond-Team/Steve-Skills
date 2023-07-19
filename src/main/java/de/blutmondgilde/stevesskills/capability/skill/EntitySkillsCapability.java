@@ -11,6 +11,8 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.Clone;
+import net.minecraftforge.event.entity.player.PlayerEvent.StartTracking;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import org.jetbrains.annotations.NotNull;
@@ -47,10 +49,28 @@ public class EntitySkillsCapability {
     }
 
     @EventBusSubscriber
-    static class Attacher {
+    static class EventHandler {
         @SubscribeEvent
         static void attach(final AttachCapabilitiesEvent<Entity> e) {
             e.addCapability(Provider.IDENTIFIER, new Provider());
+        }
+
+        @SubscribeEvent
+        static void syncOnTrack(final StartTracking e) {
+            if (!e.getEntity().level().isClientSide()) {
+                from(e.getTarget()).sync();
+            }
+        }
+
+        @SubscribeEvent
+        static void onPlayerClone(final Clone e) {
+            if (!e.getEntity().level().isClientSide()) {
+                EntitySkills original = from(e.getOriginal());
+                EntitySkills newCap = from(e.getEntity());
+
+                newCap.deserializeNBT(original.serializeNBT());
+                newCap.sync();
+            }
         }
     }
 
