@@ -31,7 +31,7 @@ public class SkillBuilder<P extends AbstractRegistrate<P>> extends AbstractBuild
     protected Skill createEntry() {
         Skill action = this.factory == null ? new Skill() : this.factory.get();
         this.eventListener.forEach(classFunctionPair -> action.addEventListener(classFunctionPair.getFirst(), classFunctionPair.getSecond().apply(action)));
-        return new Skill();
+        return action;
     }
 
     public <E extends Event> SkillBuilder<P> addEventListener(Function<Skill, Consumer<E>> eventHandler) {

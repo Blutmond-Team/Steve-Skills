@@ -28,7 +28,7 @@ import static de.blutmondgilde.stevesskills.StevesSkills.REGISTRATE;
 public class Skills {
     private static final UUID ENDURANCE_SKILL_MODIFIER_ID = UUID.fromString("8487c608-84b6-4413-a1ac-70772a47e40e");
 
-    public static final ResourceKey<Registry<Skill>> REGISTRY_KEY = REGISTRATE.makeRegistry("skill_actions", RegistryBuilder::new);
+    public static final ResourceKey<Registry<Skill>> REGISTRY_KEY = REGISTRATE.makeRegistry("skill", RegistryBuilder::new);
     public static final Supplier<IForgeRegistry<Skill>> REGISTRY_SUPPLIER = REGISTRATE.getForgeRegistrySupplier(REGISTRY_KEY);
     public static RegistryEntry<Skill> ENDURANCE = REGISTRATE.skill("endurance")
             .<LivingHurtEvent>addEventListener(self -> event -> {
