@@ -2,32 +2,23 @@ package de.blutmondgilde.stevesskills.skill;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 
 public class SkillInstance {
     public static final Codec<SkillInstance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Skill.CODEC.fieldOf("type").forGetter(SkillInstance::getSkillAction),
+            Skill.CODEC.fieldOf("type").forGetter(SkillInstance::getSkill),
             CompoundTag.CODEC.optionalFieldOf("config", new CompoundTag()).forGetter(SkillInstance::getAdditionalData)
     ).apply(instance, SkillInstance::new));
-    private final Holder<Skill> holder;
+    private final Skill skill;
     private CompoundTag additionalData;
 
     public SkillInstance(Skill skill) {
         this(skill, new CompoundTag());
     }
 
-    public SkillInstance(Holder<Skill> skillActionHolder) {
-        this(skillActionHolder, new CompoundTag());
-    }
-
     public SkillInstance(Skill skill, CompoundTag tag) {
-        this(Skills.REGISTRY_SUPPLIER.get().getDelegateOrThrow(skill), tag);
-    }
-
-    public SkillInstance(Holder<Skill> skillActionHolder, CompoundTag tag) {
-        this.holder = skillActionHolder;
+        this.skill = skill;
         this.additionalData = tag;
     }
 
@@ -39,12 +30,8 @@ public class SkillInstance {
         return this.additionalData;
     }
 
-    public Skill getSkillAction() {
-        return this.holder.get();
-    }
-
-    public Holder<Skill> getSkillActionHolder() {
-        return holder;
+    public Skill getSkill() {
+        return this.skill;
     }
 
     public CompoundTag serialize() {
@@ -56,7 +43,7 @@ public class SkillInstance {
     }
 
     public boolean is(Skill action) {
-        return this.holder.get().equals(action);
+        return this.skill.equals(action);
     }
 
     public void setAdditionalInt(String key, int value) {

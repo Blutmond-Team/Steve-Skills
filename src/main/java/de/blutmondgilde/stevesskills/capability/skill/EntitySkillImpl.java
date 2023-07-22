@@ -57,7 +57,7 @@ public class EntitySkillImpl implements EntitySkills {
             CompoundTag tag = (CompoundTag) data;
             boolean status = tag.getBoolean(SKILL_INSTANCE_STATUS_ID);
             SkillInstance instance = SkillInstance.of(tag.getCompound(SKILL_INSTANCE_ID));
-            skills.put(instance.getSkillAction(), instance, status);
+            skills.put(instance.getSkill(), instance, status);
         });
     }
 
@@ -68,7 +68,7 @@ public class EntitySkillImpl implements EntitySkills {
 
     @Override
     public void addSkill(SkillInstance instance, boolean status) {
-        skills.put(instance.getSkillAction(), instance, status);
+        skills.put(instance.getSkill(), instance, status);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class EntitySkillImpl implements EntitySkills {
 
     @Override
     public void unlock(SkillInstance skillInstance) {
-        if (MinecraftForge.EVENT_BUS.post(new UnlockedEvent(skillInstance, getOwner()))) {
+        if (!MinecraftForge.EVENT_BUS.post(new UnlockedEvent(skillInstance, getOwner()))) {
             addSkill(skillInstance);
             getOwner().sendSystemMessage(Component.literal(String.format("You unlocked the skill %s!", "tbh")));
         }

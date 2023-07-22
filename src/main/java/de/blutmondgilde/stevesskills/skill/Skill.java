@@ -57,11 +57,11 @@ public class Skill {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Skill action)) return false;
-        return Objects.equals(eventListener, action.eventListener);
+        return id.equals(action.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(eventListener);
+        return Objects.hash(id);
     }
 }

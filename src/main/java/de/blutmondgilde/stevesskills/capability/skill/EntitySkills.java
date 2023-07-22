@@ -39,7 +39,7 @@ public interface EntitySkills extends INBTSerializable<CompoundTag> {
     Pair<SkillInstance, Boolean> removeSkill(Skill instance);
 
     default Pair<SkillInstance, Boolean> removeSkill(SkillInstance instance) {
-        return removeSkill(instance.getSkillAction());
+        return removeSkill(instance.getSkill());
     }
 
     default void setSkill(SkillInstance instance, boolean status) {
