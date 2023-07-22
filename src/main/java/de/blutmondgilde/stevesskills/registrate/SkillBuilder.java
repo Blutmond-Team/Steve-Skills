@@ -6,6 +6,7 @@ import com.tterrag.registrate.builders.AbstractBuilder;
 import com.tterrag.registrate.builders.BuilderCallback;
 import de.blutmondgilde.stevesskills.skill.Skill;
 import de.blutmondgilde.stevesskills.skill.Skills;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ public class SkillBuilder<P extends AbstractRegistrate<P>> extends AbstractBuild
 
     @Override
     protected Skill createEntry() {
-        Skill action = this.factory == null ? new Skill() : this.factory.get();
+        Skill action = this.factory == null ? new Skill(new ResourceLocation(getParent().getModid(), getName())) : this.factory.get();
         this.eventListener.forEach(classFunctionPair -> action.addEventListener(classFunctionPair.getFirst(), classFunctionPair.getSecond().apply(action)));
         return action;
     }

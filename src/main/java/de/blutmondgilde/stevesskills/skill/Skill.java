@@ -2,6 +2,8 @@ package de.blutmondgilde.stevesskills.skill;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import lombok.Getter;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.Event;
@@ -17,12 +19,18 @@ import java.util.function.Consumer;
 public class Skill {
     public static final Codec<Skill> CODEC = ExtraCodecs.lazyInitializedCodec(() -> Skills.REGISTRY_SUPPLIER.get().getCodec());
     private final List<Pair<Class<?>, Consumer<? extends Event>>> eventListener = new ArrayList<>();
+    @Getter
+    private final ResourceLocation id;
 
-    public void addEventListener(Consumer<? extends Event> listener) {
+    public Skill(ResourceLocation id) {
+        this.id = id;
+    }
+
+    public <T extends Event> void addEventListener(Consumer<T> listener) {
         addEventListener(null, listener);
     }
 
-    public void addEventListener(Class<?> genericClass, Consumer<? extends Event> listener) {
+    public <T extends Event, G> void addEventListener(Class<G> genericClass, Consumer<T> listener) {
         eventListener.add(Pair.of(genericClass, listener));
     }
 

@@ -23,7 +23,7 @@ public class SkillInstance {
     }
 
     public SkillInstance(Skill skill, CompoundTag tag) {
-        this(Skills.REGISTRY_SUPPLIER.get().getHolder(skill).get(), tag);
+        this(Skills.REGISTRY_SUPPLIER.get().getDelegateOrThrow(skill), tag);
     }
 
     public SkillInstance(Holder<Skill> skillActionHolder, CompoundTag tag) {
