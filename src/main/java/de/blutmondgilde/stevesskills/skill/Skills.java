@@ -75,6 +75,6 @@ public class Skills {
             .register();
 
     public static void init() {
-        StevesSkills.getLogger().info("Registered default skill actions.");
+        StevesSkills.getLogger().info("Registered default skills.");
     }
 }

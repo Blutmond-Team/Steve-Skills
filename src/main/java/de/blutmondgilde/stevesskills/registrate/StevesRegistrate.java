@@ -22,6 +22,10 @@ public class StevesRegistrate extends AbstractRegistrate<StevesRegistrate> {
         super(StevesSkills.MODID);
     }
 
+    public SkillBuilder<StevesRegistrate> skill() {
+        return skill(currentName(), null);
+    }
+
     public SkillBuilder<StevesRegistrate> skill(String name) {
         return skill(name, null);
     }
