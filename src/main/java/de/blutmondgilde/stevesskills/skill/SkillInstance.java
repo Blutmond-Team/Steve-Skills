@@ -2,6 +2,8 @@ package de.blutmondgilde.stevesskills.skill;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 
@@ -10,7 +12,10 @@ public class SkillInstance {
             Skill.CODEC.fieldOf("type").forGetter(SkillInstance::getSkill),
             CompoundTag.CODEC.optionalFieldOf("config", new CompoundTag()).forGetter(SkillInstance::getAdditionalData)
     ).apply(instance, SkillInstance::new));
+    @Getter
     private final Skill skill;
+    @Getter
+    @Setter
     private CompoundTag additionalData;
 
     public SkillInstance(Skill skill) {
@@ -20,18 +25,6 @@ public class SkillInstance {
     public SkillInstance(Skill skill, CompoundTag tag) {
         this.skill = skill;
         this.additionalData = tag;
-    }
-
-    public void setAdditionalData(CompoundTag tag) {
-        this.additionalData = tag;
-    }
-
-    public CompoundTag getAdditionalData() {
-        return this.additionalData;
-    }
-
-    public Skill getSkill() {
-        return this.skill;
     }
 
     public CompoundTag serialize() {
