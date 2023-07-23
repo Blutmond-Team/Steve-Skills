@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SkillExpOverlay {
@@ -35,14 +36,14 @@ public class SkillExpOverlay {
     }
 
     public static void addMessage(Skill sourceSkill, double amount) {
-//        Optional<AnimatedExpMessage> message = messages.stream()
-//                .filter(animatedExpMessage -> animatedExpMessage.isFor(sourceSkill))
-//                .findFirst();
-//        if (message.isPresent()) {
-//            message.get().increaseAmount(amount);
-//        } else {
-        messages.add(new AnimatedExpMessage(sourceSkill, amount));
-//        }
+        Optional<AnimatedExpMessage> message = messages.stream()
+                .filter(animatedExpMessage -> animatedExpMessage.isFor(sourceSkill))
+                .findFirst();
+        if (message.isPresent()) {
+            message.get().increaseAmount(amount);
+        } else {
+            messages.add(new AnimatedExpMessage(sourceSkill, amount));
+        }
     }
 
     public static class AnimatedExpMessage implements IGuiOverlay {
@@ -106,6 +107,9 @@ public class SkillExpOverlay {
 
         public void increaseAmount(double amount) {
             this.amount += amount;
+            if (this.fadeOutAnimation != null) {
+                this.fadeOutAnimation = this.fadeOutAnimation.rerun();
+            }
         }
 
         public boolean isFor(Skill skill) {

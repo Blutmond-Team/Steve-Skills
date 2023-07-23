@@ -34,6 +34,10 @@ public class LinearProgression {
         return Math.min(this.minValue + diff, this.maxValue);
     }
 
+    public LinearProgression rerun() {
+        return rerun(Minecraft.getInstance().level.getGameTime());
+    }
+
     public LinearProgression rerun(long startTime) {
         return rerun(startTime, this.totalDurationTicks);
     }
