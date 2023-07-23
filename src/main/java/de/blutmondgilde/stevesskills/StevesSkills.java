@@ -1,6 +1,7 @@
 package de.blutmondgilde.stevesskills;
 
 import com.mojang.logging.LogUtils;
+import de.blutmondgilde.stevesskills.client.lang.StevesSkillsMessages;
 import de.blutmondgilde.stevesskills.network.StevesSkillsNetwork;
 import de.blutmondgilde.stevesskills.registrate.StevesRegistrate;
 import de.blutmondgilde.stevesskills.skill.Skills;
@@ -24,6 +25,7 @@ public class StevesSkills {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         REGISTRATE.registerEventListeners(modEventBus);
         Skills.init();
+        StevesSkillsMessages.init();
         modEventBus.addListener(this::commonSetup);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

@@ -30,7 +30,8 @@ public class Skills {
 
     public static final ResourceKey<Registry<Skill>> REGISTRY_KEY = REGISTRATE.makeRegistry("skills", RegistryBuilder::new);
     public static final Supplier<IForgeRegistry<Skill>> REGISTRY_SUPPLIER = REGISTRATE.getForgeRegistrySupplier(REGISTRY_KEY);
-    public static RegistryEntry<Skill> ENDURANCE = REGISTRATE.skill("endurance")
+    public static RegistryEntry<Skill> ENDURANCE = REGISTRATE
+            .skill("endurance")
             .<LivingHurtEvent>addEventListener(self -> event -> {
                 EntitySkills skills = EntitySkillsCapability.from(event.getEntity());
                 DefaultSkillWrapper wrapper;
@@ -69,9 +70,11 @@ public class Skills {
                     entity.hurtMarked = true;
                 }
             })
+            .onRegister(Skill::registerEventListener)
             .register();
 
     public static void init() {
         StevesSkills.getLogger().info("Registered default skills.");
+        SkillNames.init();
     }
 }

@@ -3,10 +3,13 @@ package de.blutmondgilde.stevesskills.skill.wrapper;
 import com.ezylang.evalex.EvaluationException;
 import com.ezylang.evalex.parser.ParseException;
 import de.blutmondgilde.stevesskills.Config;
+import de.blutmondgilde.stevesskills.client.overlay.SkillExpOverlay;
 import de.blutmondgilde.stevesskills.event.SkillEvent.ExperienceGainedEvent;
 import de.blutmondgilde.stevesskills.event.SkillEvent.LevelUpEvent;
 import de.blutmondgilde.stevesskills.skill.SkillInstance;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 
 public interface LevelableSkillWrapper {
     SkillInstance getSkillInstance();
@@ -30,6 +33,7 @@ public interface LevelableSkillWrapper {
         ExperienceGainedEvent event = new ExperienceGainedEvent(getSkillInstance(), exp);
         MinecraftForge.EVENT_BUS.post(event);
         setSkillExp(getSkillExp() + event.getAmount());
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SkillExpOverlay.addMessage(getSkillInstance().getSkill(), event.getAmount()));
 
         if (getRequiredExp() <= getSkillExp()) {
             levelUp();

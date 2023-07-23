@@ -6,6 +6,7 @@ import de.blutmondgilde.stevesskills.network.StevesSkillsNetwork;
 import de.blutmondgilde.stevesskills.network.packet.clientbound.SyncEntitySkillsPacket;
 import de.blutmondgilde.stevesskills.skill.Skill;
 import de.blutmondgilde.stevesskills.skill.SkillInstance;
+import de.blutmondgilde.stevesskills.skill.SkillNames;
 import de.blutmondgilde.stevesskills.util.map.DoubeValuedHashMap;
 import de.blutmondgilde.stevesskills.util.map.DoubleValuedMap;
 import lombok.Getter;
@@ -80,7 +81,7 @@ public class EntitySkillImpl implements EntitySkills {
     public void unlock(SkillInstance skillInstance) {
         if (!MinecraftForge.EVENT_BUS.post(new UnlockedEvent(skillInstance, getOwner()))) {
             addSkill(skillInstance);
-            getOwner().sendSystemMessage(Component.literal(String.format("You unlocked the skill %s!", "tbh")));
+            getOwner().sendSystemMessage(Component.translatable("message.stevesskills.skill.unlocked", SkillNames.of(skillInstance.getSkill())));
         }
     }
 

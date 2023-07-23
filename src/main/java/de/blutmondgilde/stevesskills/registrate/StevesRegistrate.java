@@ -7,6 +7,7 @@ import com.tterrag.registrate.util.OneTimeEventReceiver;
 import de.blutmondgilde.stevesskills.StevesSkills;
 import de.blutmondgilde.stevesskills.skill.Skill;
 import net.minecraft.core.Registry;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -47,5 +48,9 @@ public class StevesRegistrate extends AbstractRegistrate<StevesRegistrate> {
 
     public <R> Supplier<IForgeRegistry<R>> getForgeRegistrySupplier(ResourceKey<Registry<R>> registryKey) {
         return Suppliers.memoize(() -> RegistryManager.ACTIVE.getRegistry(registryKey));
+    }
+
+    public MutableComponent addMessageLang(String key, String value) {
+        return addLang("message", new ResourceLocation(getModid(), key), value);
     }
 }
